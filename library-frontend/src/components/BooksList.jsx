@@ -1,69 +1,124 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-function BooksList() {
+export default function BooksList() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const API = "http://localhost:8081/api/books";
+
+  // fetchBooks is memoized so other handlers can call it
+  const fetchBooks = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await axios.get(API);
+      setBooks(res.data || []);
+    } catch (err) {
+      console.error("Failed to fetch books", err);
+      setError("Failed to load books. Check server.");
+    } finally {
+      setLoading(false);
+    }
+  }, [API]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8081/api/books")
-      .then((response) => {
-        setBooks(response.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to load books");
-        setLoading(false);
-      });
-  }, []);
+    fetchBooks();
+  }, [fetchBooks]);
 
-  if (loading) {
-    return <p>Loading books...</p>;
-  }
+  const handleDelete = async (id) => {
+    const ok = window.confirm("Are you sure you want to delete this book?");
+    if (!ok) return;
 
-  if (error) {
-    return <p style={{ color: "red" }}>{error}</p>;
-  }
+    try {
+      await axios.delete(`${API}/${id}`);
+      toast.success("Book deleted");
+      // refresh list
+      fetchBooks();
+    } catch (err) {
+      console.error("Delete failed", err);
+      const msg =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        "Failed to delete book";
+      toast.error(msg);
+    }
+  };
+
+  if (loading) return <p>Loading books...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-    <div>
-      <h2>Library Books</h2>
+    <div style={{ padding: 12 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 12,
+        }}
+      >
+        <h2>Library Books</h2>
+        <div>
+          <button
+            onClick={() => navigate("/books/add")}
+            style={{ marginRight: 8 }}
+          >
+            Add Book
+          </button>
+          <button onClick={() => fetchBooks()}>Refresh</button>
+        </div>
+      </div>
+
       {books.length === 0 ? (
         <p>No books available.</p>
       ) : (
-        <table border="1" cellPadding="8">
-          <thead>
+        <table
+          border="1"
+          cellPadding="8"
+          style={{ width: "100%", borderCollapse: "collapse" }}
+        >
+          <thead style={{ background: "#f2f2f2" }}>
             <tr>
               <th>Id</th>
               <th>Title</th>
               <th>Author</th>
               <th>Category</th>
               <th>ISBN</th>
-              <th>Total Copies</th>
-              <th>Available Copies</th>
+              <th>Total</th>
+              <th>Available</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {books.map((book) => (
               <tr key={book.id}>
-                <td>{book.id}</td>
+                <td style={{ textAlign: "center" }}>{book.id}</td>
                 <td>{book.title}</td>
                 <td>{book.author}</td>
                 <td>{book.category}</td>
                 <td>{book.isbn}</td>
-                <td>{book.total_copies}</td>
-                <td>{book.available_copies}</td>
+                <td style={{ textAlign: "center" }}>{book.totalCopies}</td>
+                <td style={{ textAlign: "center" }}>{book.availableCopies}</td>
+                <td style={{ textAlign: "center" }}>
+                  <button onClick={() => navigate(`/books/edit/${book.id}`)}>
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(book.id)}
+                    style={{ marginLeft: 8 }}
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
-      <button onClick={() => window.location.href = '/books/add'} style={{ marginTop: '20px' }}>Add New Book</button>
     </div>
   );
 }
-
-export default BooksList;
