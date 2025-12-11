@@ -61,6 +61,7 @@ function BooksList() {
           </tbody>
         </table>
       )}
+      <button onClick={() => window.location.href = '/books/add'} style={{ marginTop: '20px' }}>Add New Book</button>
     </div>
   );
 }

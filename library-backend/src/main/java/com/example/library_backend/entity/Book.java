@@ -1,13 +1,15 @@
 package com.example.library_backend.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "books")
+@Table(name = "books", uniqueConstraints = { @UniqueConstraint(columnNames = { "isbn" }) })
 public class Book {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,7 +17,10 @@ public class Book {
 
 	private String title;
 	private String author;
+
+	@Column(unique = true)
 	private String isbn;
+	
 	private String category;
 	private Integer total_copies;
 	private Integer available_copies;
