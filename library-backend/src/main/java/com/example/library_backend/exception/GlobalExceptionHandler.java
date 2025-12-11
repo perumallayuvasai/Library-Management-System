@@ -40,4 +40,17 @@ public class GlobalExceptionHandler {
 		body.put("error", "Internal Server Error");
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
 	}
+
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<Map<String, String>> handleNotFound(ResourceNotFoundException ex) {
+		Map<String, String> body = Map.of("error", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+	}
+
+	@ExceptionHandler(BadRequestException.class)
+	public ResponseEntity<Map<String, String>> handleBadRequest(BadRequestException ex) {
+		Map<String, String> body = Map.of("error", ex.getMessage());
+		return ResponseEntity.badRequest().body(body);
+	}
+
 }

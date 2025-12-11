@@ -14,30 +14,27 @@ public class Book {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
 	private String title;
 	private String author;
-
 	@Column(unique = true)
 	private String isbn;
-	
 	private String category;
-	private Integer total_copies;
-	private Integer available_copies;
+	private Integer totalCopies;
+	private Integer availableCopies;
 
 	public Book() {
 	}
 
-	public Book(Long id, String title, String author, String isbn, String category, int total_copies,
-			int available_copies) {
+	public Book(Long id, String title, String author, String isbn, String category, int totalCopies,
+			int availableCopies) {
 		super();
 		this.id = id;
 		this.title = title;
 		this.author = author;
 		this.isbn = isbn;
 		this.category = category;
-		this.total_copies = total_copies;
-		this.available_copies = available_copies;
+		this.totalCopies = totalCopies;
+		this.availableCopies = availableCopies;
 	}
 
 	public Long getId() {
@@ -80,20 +77,19 @@ public class Book {
 		this.category = category;
 	}
 
-	public Integer getTotal_copies() {
-		return total_copies;
+	public Integer getTotalCopies() {
+		return totalCopies;
 	}
 
-	public void setTotal_copies(Integer total_copies) {
-		this.total_copies = total_copies;
+	public void setTotalCopies(Integer totalCopies) {
+		this.totalCopies = totalCopies;
 	}
 
-	public Integer getAvailable_copies() {
-		return available_copies;
+	public Integer getAvailableCopies() {
+		return availableCopies;
 	}
 
-	public void setAvailable_copies(Integer available_copies) {
-		this.available_copies = available_copies;
+	public void setAvailableCopies(Integer availableCopies) {
+		this.availableCopies = availableCopies;
 	}
-
 }
