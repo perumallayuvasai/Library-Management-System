@@ -53,4 +53,10 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.badRequest().body(body);
 	}
 
+	@ExceptionHandler(DuplicateEmailException.class)
+	public ResponseEntity<Map<String, String>> handleDuplicateEmail(DuplicateEmailException ex) {
+		Map<String, String> body = Map.of("email", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+	}
+
 }
